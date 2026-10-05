@@ -90,6 +90,7 @@ p { margin: 0; }
 .kpi dt { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .kpi dd { margin: 4px 0 0; }
 .kpi .v { font-family: var(--font-data); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.kpi .v small { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; }
 .kpi .n { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 /* secciones */
@@ -320,12 +321,12 @@ function render() {
     '<div class="price"><div class="big">' + usd(v.precio) + '</div><div id="chg">' + chgHtml() + '</div><div class="sub" id="psub">' + subPrecio() + '</div></div></div>';
 
   /* cifras clave */
+  var betaTxt = v.beta > 1.05 ? 'más volátil que el mercado' : (v.beta < 0.95 ? 'menos volátil que el mercado' : 'se mueve como el mercado');
   html += '<dl class="kpis" style="margin:0">' +
-    '<div class="kpi"><dt>Capitalización</dt><dd><span class="v">US$' + n(v.capMM, 1) + ' mil M</span><span class="n">Gran capitalización</span></dd></div>' +
-    '<div class="kpi"><dt>P/E 12 meses</dt><dd><span class="v">' + n(v.peTTM, 1) + 'x</span><span class="n">EPS GAAP ' + usd(v.epsTTM) + '</span></dd></div>' +
+    '<div class="kpi"><dt>Capitalización</dt><dd><span class="v">US$' + n(v.capMM, 1) + ' <small>mil millones</small></span></dd></div>' +
+    '<div class="kpi"><dt>P/E 12 meses</dt><dd><span class="v">' + n(v.peTTM, 1) + 'x</span></dd></div>' +
     '<div class="kpi"><dt>P/E forward</dt><dd><span class="v">' + n(v.peFwd, 1) + 'x</span><span class="n">sobre ganancias esperadas</span></dd></div>' +
-    '<div class="kpi"><dt>Objetivo prom.</dt><dd><span class="v">' + usd(v.objProm, 0) + '</span><span class="n">' + (alza >= 0 ? '+' : '') + n(alza, 0) + '% vs. precio</span></dd></div>' +
-    '<div class="kpi"><dt>Beta</dt><dd><span class="v">' + n(v.beta) + '</span><span class="n">más volátil que el mercado</span></dd></div>' +
+    '<div class="kpi"><dt>Beta</dt><dd><span class="v">' + n(v.beta) + '</span><span class="n">' + betaTxt + ' (mercado = 1,00)</span></dd></div>' +
     '</dl>';
 
   /* negocio */
