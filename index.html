@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ficha UBER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ficha de una columna. Primero identidad y cifras clave, después una sección por pregunta (negocio, ganancias, proyección, rivales, riesgos). Barra de secciones fija arriba. */
+:root {
+  --bg: #F5F6F8;
+  --surface: #FFFFFF;
+  --ink: #12161C;
+  --muted: #5A6371;
+  --line: #DCE0E6;
+  --accent: #2350D8;
+  --accent-soft: #E6ECFD;
+  --bar: #C9D3E8;
+  --good: #0F7A55;
+  --good-soft: #E3F4EC;
+  --warn: #8F5500;
+  --warn-soft: #FBF0DC;
+  --crit: #B3261E;
+  --crit-soft: #FBE7E5;
+  --font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-data: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1015; --surface: #141920; --ink: #E9EDF3; --muted: #9AA4B2; --line: #252C36;
+    --accent: #7DA2FF; --accent-soft: #1A2540; --bar: #2B3548;
+    --good: #4CC9A0; --good-soft: #11291F; --warn: #E2A64A; --warn-soft: #2B2111;
+    --crit: #F0837B; --crit-soft: #301816;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1015; --surface: #141920; --ink: #E9EDF3; --muted: #9AA4B2; --line: #252C36;
+  --accent: #7DA2FF; --accent-soft: #1A2540; --bar: #2B3548;
+  --good: #4CC9A0; --good-soft: #11291F; --warn: #E2A64A; --warn-soft: #2B2111;
+  --crit: #F0837B; --crit-soft: #301816;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+/* barra de secciones */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.nav-in { max-width: 1040px; margin-inline: auto; padding-inline: 16px; display: flex; align-items: center; gap: 16px; }
+.links { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.links::-webkit-scrollbar { display: none; }
+.mkt { flex: none; display: flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 12px; font-weight: 500; padding-block: 12px; color: var(--muted); }
+.mkt i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.mkt.open { color: var(--good); }
+.mkt.closed { color: var(--crit); }
+.mkt.open i { animation: pulso 2s ease-in-out infinite; }
+@keyframes pulso { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .mkt.open i { animation: none; } }
+.nav .tk { font-family: var(--font-data); font-weight: 500; padding-block: 12px; padding-right: 4px; color: var(--ink); }
+.nav a { color: var(--muted); text-decoration: none; font-size: 13px; padding-block: 12px; border-bottom: 2px solid transparent; }
+.nav a:hover { color: var(--ink); border-bottom-color: var(--accent); }
+
+.wrap { max-width: 1040px; margin-inline: auto; padding-inline: 16px; padding-block: 28px 64px; display: flex; flex-direction: column; gap: 44px; }
+
+/* cabecera */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px 40px; align-items: end; }
+.hero .eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.05; font-weight: 700; margin-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); background: var(--surface); }
+.price { text-align: right; }
+.price .big { font-family: var(--font-data); font-size: clamp(30px, 5vw, 40px); font-weight: 500; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.price .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.chg { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 2px 8px; border-radius: 4px; font-family: var(--font-data); font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.chg svg { width: 10px; height: 10px; fill: currentColor; flex: none; }
+.chg.up { color: var(--good); background: var(--good-soft); }
+.chg.down { color: var(--crit); background: var(--crit-soft); }
+@media (max-width: 620px) { .hero { grid-template-columns: minmax(0, 1fr); } .price { text-align: left; } }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--ink); }
+.kpi { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.kpi dt { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.kpi dd { margin: 4px 0 0; }
+.kpi .v { font-family: var(--font-data); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.kpi .n { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* secciones */
+section { scroll-margin-top: 64px; display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.sec-head h2 { font-size: 24px; font-weight: 700; }
+.asof { font-family: var(--font-data); font-size: 12px; color: var(--muted); }
+.lede { max-width: 68ch; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.cols > * { min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.panel h3 { font-size: 15px; font-weight: 500; font-family: var(--font-body); color: var(--muted); margin-bottom: 10px; }
+.note { font-size: 13px; color: var(--muted); max-width: 68ch; }
+.callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 0 6px 6px 0; max-width: 72ch; }
+.callout b { font-weight: 600; }
+
+/* mezcla del negocio */
+.stack { display: flex; height: 28px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.stack > span { display: block; min-width: 3px; }
+.legend { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.legend li { display: flex; align-items: baseline; gap: 8px; font-size: 14px; }
+.legend .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; align-self: center; }
+.legend .num { margin-left: auto; font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.facts li { display: flex; justify-content: space-between; gap: 16px; padding-block: 9px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.facts li:last-child { border-bottom: 0; }
+.facts .num { font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* gráficos */
+svg.chart { width: 100%; height: auto; display: block; }
+svg.chart .base { stroke: var(--ink); stroke-width: 1; }
+svg.chart .bar { fill: var(--accent); }
+svg.chart .bar.est { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+svg.chart .whisk { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+svg.chart text { fill: var(--ink); font-family: var(--font-data); font-size: 11px; }
+svg.chart text.cat { fill: var(--muted); font-family: var(--font-body); font-size: 11px; }
+
+/* tablas */
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14px; }
+th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td .sub { display: block; font-size: 12px; color: var(--muted); }
+
+/* escala de proyección */
+.scale { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px 28px 14px; }
+.plot { position: relative; padding-top: 22px; }
+.vline { position: absolute; top: 0; bottom: 30px; width: 0; border-left: 2px solid var(--ink); z-index: 2; }
+.vline span { position: absolute; top: -2px; left: 6px; font-family: var(--font-data); font-size: 11px; white-space: nowrap; background: var(--surface); padding-inline: 3px; }
+.srow { position: relative; height: 88px; }
+.srow .rl { position: absolute; top: 0; right: 0; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.srow .rail { position: absolute; left: 0; right: 0; top: 50px; height: 2px; background: var(--bar); }
+.srow .rng { position: absolute; top: 44px; height: 14px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 2px; }
+.srow .dot { position: absolute; top: 46px; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; transform: translateX(-50%); }
+.srow .lab { position: absolute; top: 64px; font-family: var(--font-data); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.srow .lab.lo { transform: translateX(-100%); padding-right: 5px; }
+.srow .lab.hi { transform: translateX(-50%); }
+.srow .lab.mid { top: 26px; transform: translateX(-50%); color: var(--accent); font-weight: 500; }
+.axis { position: relative; height: 24px; border-top: 1px solid var(--line); margin-top: 4px; }
+.axis span { position: absolute; top: 4px; transform: translateX(-50%); font-family: var(--font-data); font-size: 11px; color: var(--muted); }
+.axis i { position: absolute; top: 0; height: 5px; border-left: 1px solid var(--muted); }
+.upside { display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: baseline; }
+.upside .v { font-family: var(--font-data); font-size: 28px; font-weight: 500; }
+.upside .l { font-size: 12px; color: var(--muted); display: block; }
+
+/* riesgos y catalizadores */
+.rows { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.row { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 4px 18px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.row h3 { font-family: var(--font-body); font-size: 15px; font-weight: 600; }
+.row p { color: var(--muted); font-size: 14px; margin-top: 2px; max-width: 70ch; }
+.badge { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; height: fit-content; text-align: center; }
+.badge.alto { background: var(--crit-soft); color: var(--crit); }
+.badge.medio { background: var(--warn-soft); color: var(--warn); }
+.badge.bajo { background: var(--good-soft); color: var(--good); }
+.badge.neutro { background: var(--accent-soft); color: var(--accent); }
+@media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
+
+.sources { columns: 2 280px; column-gap: 32px; font-size: 13px; padding-left: 18px; margin: 0; }
+.sources li { margin-bottom: 6px; break-inside: avoid; overflow-wrap: anywhere; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 500; }
+details p, details pre { margin-top: 10px; font-size: 13px; color: var(--muted); }
+details pre { font-family: var(--font-data); background: var(--bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; color: var(--ink); }
+.disclaimer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; max-width: 78ch; }
+</style>
+
+</head><body>
+<header class="nav"><div class="nav-in"><div class="links" id="nav"></div><div class="mkt" id="mkt" role="status"></div></div></header>
+<main class="wrap" id="app"></main>
+
+<script>
+/* ============ DATOS ============
+   FICHA.num  : cifras que se pueden reemplazar con datos en vivo (ver actualizarFicha)
+   Todo lo demás es texto fijo de la ficha, con la fecha de cada dato. */
+var FICHA = {
+  simbolo: 'UBER',
+  nombre: 'Uber Technologies',
+  bolsa: 'NYSE',
+  etiquetas: ['Gran capitalización', 'Transporte', 'Movilidad', 'Delivery', 'Freight'],
+  num: {
+    fechaPrecio: '2 de octubre de 2026',
+    precio: 68.09,
+    capMM: 138.6,
+    peTTM: 14.86,
+    peFwd: 16.79,
+    epsTTM: 4.58,
+    lo52: 65.41,
+    hi52: 101.30,
+    objBajo: 70,
+    objProm: 100.77,
+    objAlto: 150,
+    beta: 1.16
+  }
+};
+
+/* ============ FORMATO ============ */
+function n(x, d) { d = d == null ? 2 : d; return Number(x).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+function usd(x, d) { return 'US$' + n(x, d); }
+
+/* ============ GRÁFICO DE BARRAS A ESCALA ============ */
+function barChart(o) {
+  var W = 320, H = 190, top = 26, bottom = 30, base = H - bottom, plotH = base - top;
+  var slot = W / o.data.length, bw = 62;
+  var sy = function (v) { return base - (v / o.max) * plotH; };
+  var out = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + o.aria + '">';
+  o.data.forEach(function (d, i) {
+    var cx = slot * i + slot / 2, y = sy(d.value);
+    out += '<rect class="bar' + (d.est ? ' est' : '') + '" x="' + (cx - bw / 2) + '" y="' + y + '" width="' + bw + '" height="' + (base - y) + '"/>';
+    var labY = y - 6;
+    if (d.range) {
+      var yl = sy(d.range[0]), yh = sy(d.range[1]);
+      out += '<path class="whisk" d="M' + cx + ' ' + yl + 'V' + yh + 'M' + (cx - 7) + ' ' + yl + 'H' + (cx + 7) + 'M' + (cx - 7) + ' ' + yh + 'H' + (cx + 7) + '"/>';
+      labY = yh - 6;
+    }
+    out += '<text x="' + cx + '" y="' + labY + '" text-anchor="middle">' + (d.texto || n(d.value, o.dec)) + '</text>';
+    out += '<text class="cat" x="' + cx + '" y="' + (base + 18) + '" text-anchor="middle">' + d.label + '</text>';
+  });
+  out += '<line class="base" x1="0" x2="' + W + '" y1="' + base + '" y2="' + base + '"/></svg>';
+  return out;
+}
+
+/* ============ ESCALA DE PRECIOS (52 semanas y objetivos) ============ */
+function priceScale(v) {
+  var min = 60, max = 160, pos = function (x) { return ((x - min) / (max - min) * 100); };
+  var ticks = [60, 80, 100, 120, 140, 160].map(function (t) {
+    return '<i style="left:' + pos(t) + '%"></i><span style="left:' + pos(t) + '%">' + t + '</span>';
+  }).join('');
+  var r52 = '<div class="srow"><span class="rl">Rango de las últimas 52 semanas</span><div class="rail"></div>' +
+    '<div class="rng" style="left:' + pos(v.lo52) + '%;width:' + (pos(v.hi52) - pos(v.lo52)) + '%"></div>' +
+    '<span class="lab lo" style="left:' + pos(v.lo52) + '%">' + n(v.lo52) + '</span>' +
+    '<span class="lab hi" style="left:' + pos(v.hi52) + '%">' + n(v.hi52) + '</span></div>';
+  var obj = '<div class="srow"><span class="rl">Precios objetivo de analistas a 12 meses</span><div class="rail"></div>' +
+    '<div class="rng" style="left:' + pos(v.objBajo) + '%;width:' + (pos(v.objAlto) - pos(v.objBajo)) + '%"></div>' +
+    '<span class="dot" style="left:' + pos(v.objProm) + '%"></span>' +
+    '<span class="lab mid" style="left:' + pos(v.objProm) + '%">prom. ' + n(v.objProm) + '</span>' +
+    '<span class="lab lo" style="left:' + pos(v.objBajo) + '%">' + n(v.objBajo, 0) + '</span>' +
+    '<span class="lab hi" style="left:' + pos(v.objAlto) + '%">' + n(v.objAlto, 0) + '</span></div>';
+  return '<div class="scale"><div class="plot">' +
+    '<div class="vline" style="left:' + pos(v.precio) + '%"><span>Hoy ' + n(v.precio) + '</span></div>' +
+    r52 + obj + '<div class="axis">' + ticks + '</div></div></div>';
+}
+
+/* ============ CONTENIDO FIJO ============ */
+var RIESGOS = [
+  { nivel: 'alto', t: 'Robotaxis y pérdida del vínculo con el cliente',
+    d: 'Waymo y Tesla pueden operar su propia red y saltear a Uber. Un análisis recoge que la alianza con Waymo podría terminar, y un comentarista de Yahoo Finance estima que Uber y Lyft llevan al menos 18 meses de atraso en tecnología de conducción autónoma. Uber responde con socios como Zoox, Nuro y Lucid, Wayve y Stellantis.' },
+  { nivel: 'medio', t: 'Gasto en vehículos autónomos',
+    d: 'Según el Financial Times, Uber evalúa invertir cerca de US$10.000 M en robotaxis: US$7.500 M en comprar vehículos y más de US$2.500 M en participaciones en Lucid, Rivian y otras. Si la adopción o las aprobaciones se demoran, el flujo de caja libre se resiente.' },
+  { nivel: 'medio', t: 'Expectativas altas para cada reporte',
+    d: 'Tras el Q2 las acciones cayeron 5,3% aunque los gross bookings superaron lo esperado, porque la guía de ganancias del Q3 (US$0,84 a 0,88 por acción) quedó debajo del consenso de US$0,89.' },
+  { nivel: 'medio', t: 'Las ganancias contables incluyen partidas no operativas',
+    d: 'La utilidad neta del Q2 (US$2.390 M) incluye US$1.600 M antes de impuestos por revaluación de inversiones: +US$1.100 M en Delivery Hero, +US$899 M en Aurora y −US$437 M en Didi. Eso mejora el P/E sobre ganancias GAAP frente al P/E sobre ganancias operativas.' },
+  { nivel: 'medio', t: 'Cambios de modelo y regulación',
+    d: 'Un cambio en el modelo de Movilidad en Reino Unido restó US$1.100 M a los ingresos reportados del Q2 y 8 puntos al crecimiento interanual. No cambia los gross bookings, pero muestra cuánto pesa la regulación en cómo se contabiliza el negocio.' }
+];
+var CATALIZADORES = [
+  { tag: 'Próximo reporte', t: 'Resultados del tercer trimestre', d: 'Fecha por confirmar. La guía pide gross bookings de US$58.250 a 60.250 M (+18% a +22% a moneda constante) y ganancia ajustada de US$0,84 a 0,88 por acción.' },
+  { tag: 'Robotaxis', t: 'Expansión de la red autónoma', d: 'Bernstein espera 15 ciudades con vehículos autónomos a fin de 2026: 6 en EE.UU. y 9 en otros países.' },
+  { tag: 'Suscripción', t: 'Uber One', d: 'Superó los 50 millones de miembros, que generan cerca de la mitad de los gross bookings.' },
+  { tag: 'Capital', t: 'Recompras y recorte de costos', d: 'Recompró US$3.011 M de acciones en el Q1. En septiembre anunció un recorte de 10% de la plantilla, unas 3.300 personas.' },
+  { tag: 'Delivery', t: 'Más comercios en Uber Eats', d: 'Costco amplió su delivery a todo el país a través de Uber Eats en septiembre.' }
+];
+var COMPETIDORES = [
+  ['Lyft', 'Movilidad (EE.UU. y Canadá)', 'Rival directo en ride-hailing, de mucho menor tamaño. Se asoció con Waymo en Nashville.'],
+  ['DoorDash', 'Delivery', 'Rival directo en delivery de comida y comercios. Solo opera en ese negocio.'],
+  ['Waymo (Alphabet)', 'Robotaxis', 'Líder en conducción autónoma. Levantó US$16.000 M en 2026. En San Francisco captó cerca de una cuarta parte del ride-hailing en unos 20 meses. También opera dentro de la red de Uber en Austin y Atlanta.'],
+  ['Tesla', 'Robotaxis', 'Robotaxi con Model Y y, más adelante, el Cybercab. Compite sobre todo por precio.'],
+  ['Zoox (Amazon)', 'Robotaxis', 'Desarrolla su propia flota y también es socio de Uber.']
+];
+var ANALISTAS = [
+  ['Citizens', 'Compra', 'US$100', '25 sep'],
+  ['Bernstein', 'Outperform', 'US$95', '30 sep'],
+  ['Bank of America', 'Compra', 'US$101 (antes 103)', '15 sep'],
+  ['Arete', 'Mantener', 'US$74', '10 sep (baja de recomendación)']
+];
+var FUENTES = [
+  ['Uber, resultados del segundo trimestre 2026', 'https://investor.uber.com/news-events/news/press-release-details/2026/Uber-Announces-Results-for-Second-Quarter-2026/default.aspx'],
+  ['Uber, Form 10-Q al 30 de junio de 2026 (SEC)', 'https://www.sec.gov/Archives/edgar/data/0001543151/000154315126000032/uber-20260630.htm'],
+  ['CNBC, reacción de la acción al Q2', 'https://www.cnbc.com/2026/08/05/uber-stock-q2-2026-earnings.html'],
+  ['StockAnalysis, ficha de UBER', 'https://stockanalysis.com/stocks/uber/'],
+  ['Investing.com, consenso de analistas', 'https://www.investing.com/equities/uber-technologies-inc-consensus-estimates'],
+  ['Ad-Hoc News, cierre del 2 de octubre y Bernstein', 'https://www.ad-hoc-news.de/boerse/news/corporate-news/uber-technologies-stock-gains-analyst-support-from-av-plans/70221732'],
+  ['Smart Cities Dive, robotaxis, inversión y recorte de plantilla', 'https://www.smartcitiesdive.com/news/robotaxi-wars-uber-waymo-zoox-tesla/830930/'],
+  ['Axios, Uber frente a Waymo y Tesla', 'https://www.axios.com/2026/02/11/uber-tesla-robotaxis-waymo'],
+  ['Yahoo Finance, la alianza con Waymo', 'https://finance.yahoo.com/technology/articles/uber-uber-losing-waymo-partnership-191041183.html'],
+  ['24/7 Wall St., Uber One y recompras del Q1', 'https://finance.yahoo.com/markets/stocks/articles/prediction-uber-stock-price-end-163552978.html'],
+  ['Hudson Labs, competidores de Uber', 'https://www.hudson-labs.com/research/uber-competitors-uber-key-rivals-in-2026'],
+  ['CNN Markets, ficha de UBER', 'https://www.cnn.com/markets/stocks/UBER']
+];
+
+/* ============ RENDER ============ */
+function render() {
+  var v = FICHA.num;
+  var alza = (v.objProm / v.precio - 1) * 100;
+  var secciones = [['negocio', 'Negocio'], ['ganancias', 'Ganancias'], ['proyeccion', 'Proyección'], ['competidores', 'Competidores'], ['riesgos', 'Riesgos'], ['catalizadores', 'Catalizadores'], ['fuentes', 'Fuentes']];
+
+  document.getElementById('nav').innerHTML = '<span class="tk">' + FICHA.simbolo + '</span>' +
+    secciones.map(function (s) { return '<a href="#' + s[0] + '">' + s[1] + '</a>'; }).join('');
+
+  var html = '';
+
+  /* cabecera */
+  html += '<div class="hero"><div><div class="eyebrow">' + FICHA.bolsa + ' · ' + FICHA.simbolo + '</div><h1>' + FICHA.nombre + '</h1>' +
+    '<div class="chips">' + FICHA.etiquetas.map(function (e) { return '<span class="chip">' + e + '</span>'; }).join('') + '</div></div>' +
+    '<div class="price"><div class="big">' + usd(v.precio) + '</div><div id="chg">' + chgHtml() + '</div><div class="sub" id="psub">' + subPrecio() + '</div></div></div>';
+
+  /* cifras clave */
+  html += '<dl class="kpis" style="margin:0">' +
+    '<div class="kpi"><dt>Capitalización</dt><dd><span class="v">US$' + n(v.capMM, 1) + ' mil M</span><span class="n">Gran capitalización</span></dd></div>' +
+    '<div class="kpi"><dt>P/E 12 meses</dt><dd><span class="v">' + n(v.peTTM, 1) + 'x</span><span class="n">EPS GAAP ' + usd(v.epsTTM) + '</span></dd></div>' +
+    '<div class="kpi"><dt>P/E forward</dt><dd><span class="v">' + n(v.peFwd, 1) + 'x</span><span class="n">sobre ganancias esperadas</span></dd></div>' +
+    '<div class="kpi"><dt>Objetivo prom.</dt><dd><span class="v">' + usd(v.objProm, 0) + '</span><span class="n">' + (alza >= 0 ? '+' : '') + n(alza, 0) + '% vs. precio</span></dd></div>' +
+    '<div class="kpi"><dt>Beta</dt><dd><span class="v">' + n(v.beta) + '</span><span class="n">más volátil que el mercado</span></dd></div>' +
+    '</dl>';
+
+  /* negocio */
+  html += '<section id="negocio"><div class="sec-head"><h2>Qué hace la empresa</h2><span class="asof">Q2 2026 · reportado el 5 ago</span></div>' +
+    '<p class="lede">Uber conecta consumidores con conductores, restaurantes, comercios y transportistas desde una misma app. Cobra una comisión por cada viaje, pedido o carga. El negocio se reparte entre Movilidad (viajes), Delivery (comida, supermercado y comercios) y Freight (carga).</p>' +
+    '<div class="cols"><div class="panel"><h3>Gross bookings del Q2 por segmento (US$58,0 mil M)</h3>' +
+    '<div class="stack" role="img" aria-label="Gross bookings: Movilidad 50%, Delivery 47%, Freight 3%">' +
+    '<span style="width:50%;background:var(--accent)"></span><span style="width:47.3%;background:var(--bar)"></span><span style="width:2.7%;background:var(--ink)"></span></div>' +
+    '<ul class="legend"><li><i class="sw" style="background:var(--accent)"></i>Movilidad<span class="num">US$28,99 mil M · 50%</span></li>' +
+    '<li><i class="sw" style="background:var(--bar)"></i>Delivery<span class="num">US$27,46 mil M · 47%</span></li>' +
+    '<li><i class="sw" style="background:var(--ink)"></i>Freight y otros (calculado)<span class="num">≈ US$1,55 mil M · 3%</span></li></ul></div>' +
+    '<div class="panel"><h3>Escala de la plataforma</h3><ul class="facts">' +
+    '<li><span>Consumidores activos por mes (Q1)</span><span class="num">199 M · +17%</span></li>' +
+    '<li><span>Viajes en el Q2</span><span class="num">3.900 M · +18%</span></li>' +
+    '<li><span>Gross bookings Movilidad</span><span class="num">+20% a mon. const.</span></li>' +
+    '<li><span>Gross bookings Delivery</span><span class="num">+25% a mon. const.</span></li>' +
+    '<li><span>Miembros de Uber One</span><span class="num">más de 50 M</span></li></ul></div></div></section>';
+
+  /* ganancias */
+  html += '<section id="ganancias"><div class="sec-head"><h2>Ganancias y valuación</h2><span class="asof">Q1 y Q2 2026 reales · Q3 según guía</span></div>' +
+    '<div class="cols"><div class="panel"><h3>Gross bookings por trimestre (US$ mil M)</h3>' +
+    barChart({ max: 66, dec: 2, aria: 'Gross bookings: 53,72 en el Q1, 58,0 en el Q2 y entre 58,25 y 60,25 esperados en el Q3', data: [
+      { label: 'Q1 2026', value: 53.72 }, { label: 'Q2 2026', value: 58.0, texto: '58,00' },
+      { label: 'Q3 2026 (guía)', value: 59.25, range: [58.25, 60.25], est: true, texto: '58,25 a 60,25' }] }) + '</div>' +
+    '<div class="panel"><h3>Ganancia ajustada por acción (US$)</h3>' +
+    barChart({ max: 1.0, dec: 2, aria: 'Ganancia ajustada por acción: 0,72 en el Q1, 0,81 en el Q2 y entre 0,84 y 0,88 esperados en el Q3', data: [
+      { label: 'Q1 2026', value: 0.72 }, { label: 'Q2 2026', value: 0.81 },
+      { label: 'Q3 2026 (guía)', value: 0.86, range: [0.84, 0.88], est: true, texto: '0,84 a 0,88' }] }) + '</div></div>' +
+    '<div class="tablewrap"><table><thead><tr><th>Indicador</th><th class="num">Valor</th><th>Contexto</th></tr></thead><tbody>' +
+    '<tr><td>Ingresos, últimos 12 meses</td><td class="num">US$55,2 mil M</td><td>+16,7% interanual</td></tr>' +
+    '<tr><td>Ingresos del Q2</td><td class="num">US$14,2 mil M</td><td>+12% (+11% a moneda constante). El cambio de modelo en Reino Unido restó 8 puntos.</td></tr>' +
+    '<tr><td>Resultado operativo GAAP, Q2</td><td class="num">US$1,9 mil M</td><td>+30% interanual</td></tr>' +
+    '<tr><td>Resultado operativo ajustado, Q2</td><td class="num">US$2,1 mil M</td><td>+40% interanual; 3,7% de los gross bookings (3,3% un año antes)</td></tr>' +
+    '<tr><td>EBITDA ajustado sobre gross bookings</td><td class="num">4,9%</td><td>4,5% en el Q2 de 2025</td></tr>' +
+    '<tr><td>Ganancia ajustada por acción, Q2</td><td class="num">US$0,81</td><td>+35% interanual; en línea con lo esperado</td></tr>' +
+    '<tr><td>Utilidad neta, Q2</td><td class="num">US$2,39 mil M</td><td>Incluye US$1,6 mil M antes de impuestos por revaluación de inversiones</td></tr>' +
+    '<tr><td>Dividendo</td><td class="num">No paga</td><td>Recompró US$3.011 M de acciones en el Q1</td></tr>' +
+    '</tbody></table></div>' +
+    '<div class="callout"><b>Cómo leer el P/E.</b> El ' + n(v.peTTM, 1) + 'x usa la ganancia contable (GAAP) de los últimos 12 meses, que incluye ganancias por revaluación de inversiones. El P/E forward, de ' + n(v.peFwd, 1) + 'x, parte de ganancias esperadas y es más alto. Esa diferencia sugiere que parte de lo ganado recientemente no se repetiría.</div></section>';
+
+  /* proyección */
+  html += '<section id="proyeccion"><div class="sec-head"><h2>Proyección de analistas</h2><span class="asof">consenso a principios de octubre de 2026</span></div>' +
+    '<p class="lede">El consenso de entre 43 y 47 analistas, según la fuente, es Compra.' + (v.precio < v.objBajo ? ' El precio actual está por debajo del objetivo más bajo.' : '') + '</p>' +
+    '<div class="upside"><div><span class="v">' + usd(v.objProm) + '</span><span class="l">precio objetivo promedio a 12 meses</span></div>' +
+    '<div><span class="v">' + (alza >= 0 ? '+' : '') + n(alza, 0) + '%</span><span class="l">frente al precio del ' + v.fechaPrecio.replace(' de 2026', '') + '</span></div>' +
+    '<div><span class="v">' + usd(v.objBajo, 0) + ' a ' + usd(v.objAlto, 0) + '</span><span class="l">rango de objetivos</span></div></div>' +
+    priceScale(v) +
+    '<div class="tablewrap"><table><thead><tr><th>Casa</th><th>Recomendación</th><th class="num">Objetivo</th><th>Fecha</th></tr></thead><tbody>' +
+    ANALISTAS.map(function (a) { return '<tr><td>' + a[0] + '</td><td>' + a[1] + '</td><td class="num">' + a[2] + '</td><td>' + a[3] + '</td></tr>'; }).join('') +
+    '</tbody></table></div>' +
+    '<p class="note">Los objetivos son estimaciones de los analistas a 12 meses, no promesas. Los agregadores difieren un poco: el promedio va de US$100,77 a US$103,03 según la fuente.</p></section>';
+
+  /* competidores */
+  html += '<section id="competidores"><div class="sec-head"><h2>Competidores</h2><span class="asof">2026</span></div>' +
+    '<div class="tablewrap"><table><thead><tr><th>Empresa</th><th>Dónde compite</th><th>Qué importa</th></tr></thead><tbody>' +
+    COMPETIDORES.map(function (c) { return '<tr><td><b>' + c[0] + '</b></td><td>' + c[1] + '</td><td>' + c[2] + '</td></tr>'; }).join('') +
+    '</tbody></table></div></section>';
+
+  /* riesgos */
+  html += '<section id="riesgos"><div class="sec-head"><h2>Riesgos</h2><span class="asof">nivel según criterio editorial</span></div><div class="rows">' +
+    RIESGOS.map(function (r) { return '<div class="row"><span class="badge ' + r.nivel + '">' + r.nivel + '</span><div><h3>' + r.t + '</h3><p>' + r.d + '</p></div></div>'; }).join('') +
+    '</div></section>';
+
+  /* catalizadores */
+  html += '<section id="catalizadores"><div class="sec-head"><h2>Catalizadores</h2><span class="asof">lo que puede mover la acción</span></div><div class="rows">' +
+    CATALIZADORES.map(function (c) { return '<div class="row"><span class="badge neutro">' + c.tag + '</span><div><h3>' + c.t + '</h3><p>' + c.d + '</p></div></div>'; }).join('') +
+    '</div></section>';
+
+  /* fuentes y aviso */
+  html += '<section id="fuentes"><div class="sec-head"><h2>Fuentes</h2><span class="asof">consultadas el 5 de octubre de 2026</span></div>' +
+    '<ol class="sources">' + FUENTES.map(function (f) { return '<li><a href="' + f[1] + '" target="_blank" rel="noopener">' + f[0] + '</a></li>'; }).join('') + '</ol>' +
+    '<details><summary>Para quien arma el sitio: conectar datos en vivo</summary>' +
+    '<p>El texto de la ficha queda fijo. Las cifras de mercado están en un solo objeto, <span class="mono">FICHA.num</span>, y todo lo que se calcula (alza, posiciones en la escala) se recalcula solo. Para refrescarlas con una API de cotizaciones:</p>' +
+    '<pre>actualizarFicha({ precio: 69.40, capMM: 141.2, peTTM: 15.1, fechaPrecio: "6 de octubre de 2026" })</pre>' +
+    '<p>En esta versión el precio en vivo llega de la función <span class="mono">/api/quote</span> (cada 30 segundos) y la variación se calcula contra el cierre anterior.</p><p>Para sumar otro ticker, se duplica el bloque de datos y se reemplazan los textos de negocio, rivales, riesgos y catalizadores.</p></details>' +
+    '<p class="disclaimer">Información con fines educativos. No es una recomendación de compra o venta ni asesoramiento financiero. Los datos provienen de las fuentes citadas y pueden cambiar o contener errores. Verificá las cifras antes de decidir.</p></section>';
+
+  document.getElementById('app').innerHTML = html;
+}
+
+/* reemplaza cifras de mercado y vuelve a dibujar la ficha */
+function actualizarFicha(parcial) {
+  for (var k in parcial) { if (Object.prototype.hasOwnProperty.call(parcial, k)) FICHA.num[k] = parcial[k]; }
+  var det = document.querySelector('details'), abierto = det && det.open;
+  render();
+  if (abierto) { det = document.querySelector('details'); if (det) det.open = true; }
+}
+window.actualizarFicha = actualizarFicha;
+
+/* ============ MERCADO ABIERTO / CERRADO (NYSE, hora de Nueva York) ============
+   Feriados y cierres tempranos: actualizar cada año. */
+var FERIADOS = ['2026-11-26', '2026-12-25', '2027-01-01', '2027-01-18', '2027-02-15', '2027-03-26', '2027-05-31', '2027-06-18', '2027-07-05', '2027-09-06', '2027-11-25', '2027-12-24'];
+var CIERRE_TEMPRANO = { '2026-11-27': 13 * 60, '2026-12-24': 13 * 60 };
+function mercadoAbierto(d) {
+  var o = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    .formatToParts(d || new Date()).forEach(function (p) { o[p.type] = p.value; });
+  var fecha = o.year + '-' + o.month + '-' + o.day;
+  if (o.weekday === 'Sat' || o.weekday === 'Sun' || FERIADOS.indexOf(fecha) >= 0) return false;
+  var m = Number(o.hour) * 60 + Number(o.minute);
+  return m >= 9 * 60 + 30 && m < (CIERRE_TEMPRANO[fecha] || 16 * 60);
+}
+function pintarMercado() {
+  var el = document.getElementById('mkt'); if (!el) return;
+  var ab = mercadoAbierto();
+  el.className = 'mkt ' + (ab ? 'open' : 'closed');
+  el.innerHTML = '<i></i>' + (ab ? 'Mercado abierto' : 'Mercado cerrado');
+  var sub = document.getElementById('psub'); if (sub) sub.innerHTML = subPrecio();
+}
+
+/* ============ PRECIO EN VIVO (conector IOL Inversiones, cada 30 s) ============ */
+var AR = 'America/Argentina/Buenos_Aires';
+var LIVE = { ok: false, previo: null, ts: null, error: null };
+function chgHtml() {
+  if (!LIVE.ok) return '';
+  var d = FICHA.num.precio - LIVE.previo, p = d / LIVE.previo * 100, up = d >= 0;
+  var flecha = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="' + (up ? 'M5 1L9.5 9H.5Z' : 'M5 9L.5 1h9Z') + '"/></svg>';
+  return '<span class="chg ' + (up ? 'up' : 'down') + '" role="img" aria-label="' + (up ? 'Sube ' : 'Baja ') + n(Math.abs(p)) + ' por ciento en el día">' + flecha +
+    (up ? '+' : '−') + n(Math.abs(d)) + ' (' + (up ? '+' : '−') + n(Math.abs(p)) + '%)</span>';
+}
+function subPrecio() {
+  var v = FICHA.num;
+  if (LIVE.ok) {
+    var d = new Date(LIVE.ts);
+    var cuando = d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', timeZone: AR }).replace('.', '') + ', ' +
+      d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: AR });
+    return (mercadoAbierto() ? 'En vivo' : 'Última cotización') + ' · ' + cuando + ' (hora de Argentina)';
+  }
+  return 'Cierre del ' + v.fechaPrecio + (LIVE.error ? ' · ' + LIVE.error : '');
+}
+function alCotizar(payload) {
+  if (typeof payload === 'string') { try { payload = JSON.parse(payload); } catch (e) { return; } }
+  var t = payload && payload.trade;
+  if (!t || !t.lot_price || !t.previous_close_lot_price) return;
+  var p = t.lot_price.value, prev = t.previous_close_lot_price.value;
+  if (typeof p !== 'number' || !(prev > 0)) return;
+  if (LIVE.ok && LIVE.ts === t.timestamp && FICHA.num.precio === p) return;
+  LIVE.ok = true; LIVE.previo = prev; LIVE.ts = t.timestamp; LIVE.error = null;
+  actualizarFicha({ precio: p, fechaPrecio: new Date(t.timestamp).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: AR }) });
+}
+function errorVivo(msg) {
+  if (LIVE.ok) return;
+  LIVE.error = msg;
+  var sub = document.getElementById('psub'); if (sub) sub.innerHTML = subPrecio();
+}
+function conectarPrecio() {
+  function pedir() {
+    if (document.visibilityState === 'hidden') return;
+    fetch('/api/quote?s=' + encodeURIComponent(FICHA.simbolo))
+      .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (j) {
+        alCotizar({ trade: { lot_price: { value: j.price }, previous_close_lot_price: { value: j.prevClose }, timestamp: new Date(j.ts).toISOString() } });
+      })
+      .catch(function () { errorVivo('sin precio en vivo por ahora'); });
+  }
+  pedir();
+  setInterval(pedir, 30000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') pedir(); });
+}
+
+render();
+pintarMercado();
+setInterval(pintarMercado, 30000);
+conectarPrecio();
+</script>
+</body></html>
